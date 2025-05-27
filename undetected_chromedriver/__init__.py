@@ -785,6 +785,7 @@ class Chrome(selenium.webdriver.chrome.webdriver.WebDriver):
             for _ in range(5):
                 try:
                     shutil.rmtree(self.user_data_dir, ignore_errors=False)
+                    time.sleep(0.1)
                 except FileNotFoundError:
                     pass
                 except (RuntimeError, OSError, PermissionError) as e:
@@ -795,7 +796,7 @@ class Chrome(selenium.webdriver.chrome.webdriver.WebDriver):
                 else:
                     logger.debug("successfully removed %s" % self.user_data_dir)
                     break
-                time.sleep(0.1)
+                
 
         # dereference patcher, so patcher can start cleaning up as well.
         # this must come last, otherwise it will throw 'in use' errors
@@ -838,10 +839,10 @@ class Chrome(selenium.webdriver.chrome.webdriver.WebDriver):
     def __del__(self):
         try:
             self.service.process.kill()
+            self.quit()
         except:  # noqa
             pass
-        self.quit()
-
+        
     @classmethod
     def _ensure_close(cls, self):
         # needs to be a classmethod so finalize can find the reference
